@@ -1,0 +1,116 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+<<<<<<< HEAD
+    "I:\\Practice\\Dapp\\contracts\\CertificateNFT.sol": {
+      "lastModificationDate": 1701537064055,
+      "contentHash": "3053ceaf7d6530aafd7fd1258b7cb4d4",
+=======
+    "I:\\Practice\\Dapp V2\\Dapp\\contracts\\CertificateNFT.sol": {
+      "lastModificationDate": 1700620302333,
+      "contentHash": "8e51803a62e56d614d9b49756c0b4eae",
+>>>>>>> e33b69e785868c0396dbf7b65812259fe8b92c41
+      "sourceName": "contracts/CertificateNFT.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "CertificateNFT"
+      ]
+    },
+    "I:\\Practice\\Dapp\\contracts\\console.sol": {
+      "lastModificationDate": 1700909031254,
+      "contentHash": "38838fba37f71a2697652c782ee639b3",
+      "sourceName": "contracts/console.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
+      ]
+    },
+    "I:\\Practice\\Dapp V2\\Dapp\\contracts\\IPFSstorage.sol": {
+      "lastModificationDate": 1700893414947,
+      "contentHash": "7b9f79d27ea98e6d787c10d45655fab4",
+      "sourceName": "contracts/IPFSstorage.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IpfsStorage"
+      ]
+    }
+  }
+}

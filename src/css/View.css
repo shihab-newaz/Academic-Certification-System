@@ -1,0 +1,28 @@
+ .view-container{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+
+ }
+ h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  
