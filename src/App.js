@@ -1,8 +1,8 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import IssueCertificate from './Issue';
-import ImagePage from './Issue';
-import ViewCertificate from './View';
+import IssueCertificateComponent from './Issue';
+
+import ViewCertificateComponent from './View';
 import { useLocation } from 'react-router-dom';
 
 
@@ -14,7 +14,7 @@ let Redirect = false; // Set to true after redirection
 
 function App() {
   const [studentAddress, setStudentAddress] = useState('');
-
+ 
   const pathname = useLocation().pathname; // Use the useLocation hook inside the App function
 
   // Update the flag when visiting the `/view` route
@@ -27,9 +27,9 @@ function App() {
   }, [pathname]);
 
   // Handle issue certificate and redirect to view certificate page
-  const handleIssueCertificateAndRedirect = async () => {
+  const handleIssueCertificate = async () => {
     try {
-      await IssueCertificate(); // Call the issueCertificate function
+      await IssueCertificateComponent(); // Issue the certificate
       Router.push('/view'); // Redirect to the view certificate page
       Redirect = true; // Update the flag after redirection
     } catch (error) {
@@ -47,9 +47,9 @@ function App() {
 
     }}>
       <Routes>
-        <Route exact path="/" element={<IssueCertificate issueCertificateAndRedirect={handleIssueCertificateAndRedirect} />} />
-        <Route path="/view" element={<ViewCertificate studentAddress={studentAddress} />} />
-        <Route path="/image" component={ImagePage} />
+        <Route exact path="/" element={<IssueCertificateComponent issueCertificateComponentAndRedirect={handleIssueCertificate} />} />
+        <Route path="/view" element={<ViewCertificateComponent studentAddress={studentAddress}  />} />
+
 
       </Routes>
 
