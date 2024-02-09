@@ -62,7 +62,7 @@ function App() {
           justifyContent: 'center'
         }}>
           <Link to="/view">
-            <button>Go to View</button>
+            <button style={{marginBottom:10}}>Go to View</button>
           </Link>
         </div>
       }
@@ -74,7 +74,7 @@ function App() {
           justifyContent: 'center'
         }}>
           <Link to="/">
-            <button>Go to Issue</button>
+            <button style={{marginBottom:10}}>Go to Issuance</button>
           </Link>
         </div>
       }

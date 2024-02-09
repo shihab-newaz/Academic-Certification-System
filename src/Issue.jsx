@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef,useEffect } from 'react';
 import { ethers } from 'ethers';
 import './css/Issue.css'
 import { create } from 'ipfs-http-client';
@@ -20,13 +20,18 @@ function IssueCertificateComponent() {
   const [studentAddress, setStudentAddress] = useState('');
   const [issueResult, setIssueResult] = useState('');
  
-  const CONTRACT_ADDRESS = '0x68EFE59C99cAf2c0B06d4C69f6156cDAABe27fcF';
+  const CONTRACT_ADDRESS = '0xAddBB947D20815BE9DcAF90059A31a756fb7E57B';
   const API_KEY = 'FL2LLcHpmU6y2PVSqEnv-3BcXP9yJoZd';
   const PRIVATE_KEY = '48570c2da3ea0df17bd1ad80c00a9886314a05c406add11c0ea6f31e42632fdf';
   const fileInput = useRef(null);
   const [fileCid, setFileCid] = useState(null);
   //const [fileUrl, setFileUrl] = useState(null);
 
+  useEffect(() => {
+    if (fileCid) {
+      console.log(fileCid);
+    }
+  }, [fileCid]);
 
   async function handleUploadToIPFS() {
     const file = fileInput.current.files[0];
@@ -40,34 +45,16 @@ function IssueCertificateComponent() {
       reader.onloadend = async () => {
         const {cid}  = await client.add(reader.result);
         console.log(cid);
-        setFileCid(cid);
-
+        setFileCid(cid.toString());
+      
       };
       reader.readAsArrayBuffer(file);
+      
     } catch (error) {
       
       console.error('Error uploading file:', error);
     }
   }
-
-  // async function fetchFileFromIPFS(cid) {
-  //   try {
-  //    // ViewIPFSimage=true;
-  //     const stream = client.cat(cid);
-  //     let data = [];
-  
-  //     for await (const chunk of stream) {
-  //       data.push(chunk);
-  //     }
-  //     // Create a Blob from the data
-  //     const blob = new Blob(data, { type: 'image/jpeg' }); 
-  //     // Create a URL from the Blob
-  //     const url = URL.createObjectURL(blob);
-  //     setFileUrl(url);
-  //   } catch (error) {
-  //     console.error('Error fetching file from IPFS:', error);
-  //   }
-  // }
 
 
 
@@ -81,16 +68,20 @@ function IssueCertificateComponent() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
       const issueTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp
-
+      
+      if(fileCid){
       const transaction = await contract.issueCertificate(
         studentName,
         degreeName,
         subject,
         studentAddress,
-        issueTimestamp,fileCid.toString()
-      );
-
-      await transaction.wait();
+        issueTimestamp,
+        fileCid
+        );
+        await transaction.wait();
+  
+      }
+     else{console.log('Cid is null');}
 
       setIssueResult('Certificate issued successfully!');
     } catch (error) {
@@ -124,21 +115,14 @@ function IssueCertificateComponent() {
       />
 
       <input type="file" ref={fileInput} />
-      <button onClick={handleUploadToIPFS
-  }>Upload to IPFS</button> <br/>
+      <button onClick={handleUploadToIPFS} style={{marginBottom:10,}}>Upload to IPFS</button> <br/>
 {/* 
       <button onClick={() => fetchFileFromIPFS(fileCid)}>View From IPFS</button>  <br/>      */}
       
       <button onClick={issueCertificate}>Issue Certificate</button> <br/>
       <p>{issueResult}</p><br/>
       
-      {/* {ViewIPFSimage === true &&
-        <div>
-        <img id="image" alt="From IPFS" src={fileUrl}/>
-        <p>CID: {fileCid.toString()}</p>
 
-        </div>
-      } */}
 
     </div>
 
