@@ -1,9 +1,10 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import IssueCertificateComponent from './Issue';
 
 import ViewCertificateComponent from './View';
 import { useLocation } from 'react-router-dom';
+import VerifyCertificateComponent from './Verify';
 
 
 let Redirect = false; // Set to true after redirection
@@ -14,7 +15,7 @@ let Redirect = false; // Set to true after redirection
 
 function App() {
   const [studentAddress, setStudentAddress] = useState('');
- 
+
   const pathname = useLocation().pathname; // Use the useLocation hook inside the App function
 
   // Update the flag when visiting the `/view` route
@@ -48,36 +49,63 @@ function App() {
     }}>
       <Routes>
         <Route exact path="/" element={<IssueCertificateComponent issueCertificateComponentAndRedirect={handleIssueCertificate} />} />
-        <Route path="/view" element={<ViewCertificateComponent studentAddress={studentAddress}  />} />
-
+        <Route path="/view" element={<ViewCertificateComponent studentAddress={studentAddress} />} />
+        <Route path="/verify" element={< VerifyCertificateComponent />} />
 
       </Routes>
 
+      {/* {pathname === '/verify' && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Link to="/verify">
+            <button style={{ marginBottom: 10 }}>Verify Certificate</button>
+          </Link>
+        </div>
+      )
+      } */}
 
       {/* Conditional rendering based on the flag */}
-      {Redirect === false &&
+      {pathname !== '/view' && pathname !== '/verify' &&
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <Link to="/view">
-            <button style={{marginBottom:10}}>Go to View</button>
+            <button style={{ marginBottom: 10 }}>View Certificate</button>
           </Link>
         </div>
       }
 
-      {Redirect === true &&
+      {pathname !== '/' &&
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <Link to="/">
-            <button style={{marginBottom:10}}>Go to Issuance</button>
+            <button style={{ marginBottom: 10 }}>Go to Issuance</button>
           </Link>
         </div>
       }
+
+      {pathname !== '/verify' && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Link to="/verify">
+            <button style={{ marginBottom: 10 }}>Go to Verification</button>
+          </Link>
+        </div>
+      )
+      }
+
+  
 
     </div>
   );

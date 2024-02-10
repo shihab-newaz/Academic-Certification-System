@@ -15,23 +15,24 @@ const client = create({
 
 function IssueCertificateComponent() {
   const [studentName, setStudentName] = useState('');
+  const [roll, setRoll] = useState('');
   const [degreeName, setDegreeName] = useState('');
   const [subject, setSubject] = useState('');
   const [studentAddress, setStudentAddress] = useState('');
   const [issueResult, setIssueResult] = useState('');
  
-  const CONTRACT_ADDRESS = '0xAddBB947D20815BE9DcAF90059A31a756fb7E57B';
-  const API_KEY = 'FL2LLcHpmU6y2PVSqEnv-3BcXP9yJoZd';
-  const PRIVATE_KEY = '48570c2da3ea0df17bd1ad80c00a9886314a05c406add11c0ea6f31e42632fdf';
+  const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;  
+  const API_KEY = process.env.REACT_APP_API_KEY;
+  const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
   const fileInput = useRef(null);
   const [fileCid, setFileCid] = useState(null);
-  //const [fileUrl, setFileUrl] = useState(null);
 
-  useEffect(() => {
-    if (fileCid) {
-      console.log(fileCid);
-    }
-  }, [fileCid]);
+
+  // useEffect(() => {
+  //   if (fileCid) {
+  //     console.log(fileCid);
+  //   }
+  // }, [fileCid]);
 
   async function handleUploadToIPFS() {
     const file = fileInput.current.files[0];
@@ -72,6 +73,7 @@ function IssueCertificateComponent() {
       if(fileCid){
       const transaction = await contract.issueCertificate(
         studentName,
+        roll,
         degreeName,
         subject,
         studentAddress,
@@ -97,6 +99,11 @@ function IssueCertificateComponent() {
         type="text"
         placeholder="Student Name"
         onChange={(e) => setStudentName(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Roll Number"
+        onChange={(e) => setRoll(e.target.value)}
       />
       <input
         type="text"

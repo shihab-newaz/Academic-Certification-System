@@ -14,9 +14,9 @@ function ViewCertificateComponent({  }) {
   const [fileUrl, setFileUrl] = useState(null);
   const [fileCid, setFileCid] = useState(null);
 
-  const CONTRACT_ADDRESS = '0xAddBB947D20815BE9DcAF90059A31a756fb7E57B';
-  const API_KEY = 'FL2LLcHpmU6y2PVSqEnv-3BcXP9yJoZd';
-  const PRIVATE_KEY = '8332144f020a904498a781d075ad1d303efbbe828fab718fd43bcad1f5b2d8ca';
+  const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;  
+  const API_KEY = process.env.REACT_APP_API_KEY;
+  const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
   const[viewIPFSimage, setViewIPFSimage]=useState(false);
 
   const network = 'maticmum';
@@ -60,12 +60,14 @@ function ViewCertificateComponent({  }) {
       setFileCid(certificate.fileCid);
       setCertificateDetails({
         name: certificate.name,
+        roll: certificate.roll,
         degreeName: certificate.degreeName,
         subject: certificate.subject,
         issueTimestamp: new Date(certificate.timestamp * 1000),
       });
 
       setShowDetails(true);
+
     } catch (error) {
       setCertificateDetails({ error: 'Failed to view certificate' + '-->' + error });
     }
@@ -102,6 +104,7 @@ function ViewCertificateComponent({  }) {
         <div>
           <h4>Certificate Details</h4>
           <p>Name: {certificateDetails.name}</p>
+          <p>Roll Number: {certificateDetails.roll}</p>
           <p>Degree Name: {certificateDetails.degreeName}</p>
           <p>Subject: {certificateDetails.subject}</p>
           <p>Issue Timestamp: {certificateDetails.issueTimestamp.toString()}</p>

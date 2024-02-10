@@ -1,41 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ethers } from 'ethers';
+import './css/Issue.css';
 
+function VerifyCertificateComponent() {
+    const [studentAddress, setStudentAddress] = useState('');
+    const [issueResult, setIssueResult] = useState(false);
 
+    const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+    const [verificationMessage, setVerificationMessage] = useState('');
 
-const Verify = () => {
-    const [certificateId, setCertificateId] = useState('');
-    const [verificationResult, setVerificationResult] = useState('');
+    const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
+    const API_KEY = process.env.REACT_APP_API_KEY;
+    const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
+
+    const network = 'maticmum';
+    const provider = new ethers.providers.AlchemyProvider(network, API_KEY);
+    const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+    const contractABI = require('./abis/CertificateNFT.json');
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
     const verifyCertificate = async () => {
         try {
-            // Connect to the deployed contract
-            const contractAddress = '0x68EFE59C99cAf2c0B06d4C69f6156cDAABe27fcF'; // Replace with the actual contract address
-            const provider = new ethers.providers.JsonRpcProvider();
-            const contract = new Contract(contractAddress, CertificateNFT.abi, provider);
+            const verification = await contract.verifyCertificate(studentAddress);
+            setIssueResult(verification);
 
-            // Call the verifyCertificate function in the contract
-            const result = await contract.verifyCertificate(certificateId);
+            if (verification) {
+                console.log('Certificate verification is successful');
+                setVerificationMessage('Verification successful');
+            } else {
+                console.log('Certificate verification is unsuccessful');
+                setVerificationMessage('Verification unsuccessful');
+            }
 
-            // Update the verification result state
-            setVerificationResult(result);
+            setShowVerificationMessage(true);
+
+            setTimeout(() => {
+                setShowVerificationMessage(false);
+            }, 5000);
         } catch (error) {
-            console.error('Error verifying certificate:', error);
+            console.error(error);
         }
     };
 
     return (
-        <div>
-            <h1>Verify Certificate</h1>
+        <div className='issue-certificate-container'>
+            <h1>Issue Certificate</h1>
             <input
                 type="text"
-                value={certificateId}
-                onChange={(e) => setCertificateId(e.target.value)}
+                placeholder="Student Address"
+                value={studentAddress}
+                onChange={(e) => setStudentAddress(e.target.value)}
             />
-            <button onClick={verifyCertificate}>Verify</button>
-            <p>{verificationResult}</p>
+            <button onClick={verifyCertificate}>Verify Certificate</button>
+            {showVerificationMessage && <p>{verificationMessage}</p>}
         </div>
     );
-};
+}
 
-export default Verify;
+export default VerifyCertificateComponent;
