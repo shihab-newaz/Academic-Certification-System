@@ -57,6 +57,11 @@ function ViewCertificateComponent({  }) {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
       const certificate = await contract.viewCertificate(studentAddress);
+
+      if (!certificate.isIssued) {
+        setCertificateDetails({ error: 'This certificate has been revoked' });
+        return;
+    }
       setFileCid(certificate.fileCid);
       setCertificateDetails({
         name: certificate.name,
@@ -111,7 +116,7 @@ function ViewCertificateComponent({  }) {
 
         </div>
       )}
-      {certificateDetails.error && <p>Error: {certificateDetails.error}</p>}
+      {certificateDetails.error && <p>Sorry, {certificateDetails.error}</p>}
 
       <button onClick={() => fetchFileFromIPFS()} style={{marginBottom:10,width:150}}>View Image</button>  <br />
             {viewIPFSimage === true &&
