@@ -88,7 +88,7 @@ function IssueCertificateComponent() {
       setIssueResult('Certificate issued successfully!');
     } catch (error) {
       console.error('Error issuing certificate:', error);
-      setIssueResult('Failed to issue certificate' + '-->' + error);
+      setIssueResult('Failed to issue certificate' );
     }
   };
 

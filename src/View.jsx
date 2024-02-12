@@ -30,6 +30,10 @@ function ViewCertificateComponent({  }) {
   async function fetchFileFromIPFS() {
     try {
       const certificate = await contract.viewCertificate(studentAddress);
+      if (certificate.error) {
+        setCertificateDetails({ error: certificate.error });
+        return;
+      }
       setViewIPFSimage(true);
       const stream = client.cat(certificate.fileCID);
       let data = [];
@@ -57,11 +61,11 @@ function ViewCertificateComponent({  }) {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
       const certificate = await contract.viewCertificate(studentAddress);
-
-      if (!certificate.isIssued) {
-        setCertificateDetails({ error: 'This certificate has been revoked' });
+      if (certificate.error) {
+        setCertificateDetails({ error: certificate.error });
         return;
-    }
+      }
+  
       setFileCid(certificate.fileCid);
       setCertificateDetails({
         name: certificate.name,
@@ -116,7 +120,11 @@ function ViewCertificateComponent({  }) {
 
         </div>
       )}
-      {certificateDetails.error && <p>Sorry, {certificateDetails.error}</p>}
+      {certificateDetails.error && (
+        <p>
+          Sorry,  The certificate is either not issued or is revoked.
+        </p>
+      )}
 
       <button onClick={() => fetchFileFromIPFS()} style={{marginBottom:10,width:150}}>View Image</button>  <br />
             {viewIPFSimage === true &&

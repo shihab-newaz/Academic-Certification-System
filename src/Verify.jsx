@@ -44,7 +44,7 @@ function VerifyCertificateComponent() {
 
     return (
         <div className='issue-certificate-container'>
-            <h1>Issue Certificate</h1>
+            <h1>Certificate Verification</h1>
             <input
                 type="text"
                 placeholder="Student Address"

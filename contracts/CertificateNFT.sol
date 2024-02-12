@@ -12,6 +12,7 @@ contract CertificateNFT {
         address recipient;
         uint256 timestamp;
         bool isIssued;
+        bool isRevoked;
         string fileCID;
         //bytes32 signature;
     }
@@ -41,8 +42,8 @@ contract CertificateNFT {
         require(recipient != address(0), "Invalid recipient address");
         bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
-            !certificates[certificateHash].isIssued,
-            "Certificate already issued"
+            !certificates[certificateHash].isIssued||certificates[certificateHash].isRevoked,
+            "Certificate already issued or revoked for this recipient"
         );
         certificates[certificateHash] = Certificate(
             name,
@@ -52,6 +53,7 @@ contract CertificateNFT {
             recipient,
             timestamp,
             true,
+            false,
             fileCID
         );
         //emit CertificateIssued(certificateHash, recipient);
@@ -59,9 +61,14 @@ contract CertificateNFT {
 
     function verifyCertificate(address recipient) public view returns (bool) {
         bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
-        return certificates[certificateHash].isIssued;
+        require(
+            certificates[certificateHash].recipient == recipient,
+            "No certificate found for this recipient"
+        );
+        return
+            certificates[certificateHash].isIssued &&
+            !certificates[certificateHash].isRevoked;
     }
-
 
     function revokeCertificate(address recipient) public onlyOwner {
         bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
@@ -69,12 +76,10 @@ contract CertificateNFT {
             certificates[certificateHash].isIssued,
             "Certificate not issued or already revoked"
         );
-        certificates[certificateHash].isIssued = false;
+        certificates[certificateHash].isRevoked = true;
     }
 
-    function viewCertificate(
-        address studentAddress
-    )
+    function viewCertificate(address studentAddress )
         public
         view
         returns (
@@ -91,6 +96,11 @@ contract CertificateNFT {
             certificates[certificateHash].recipient == studentAddress,
             "No certificate found for this student"
         );
+
+            require(
+        !certificates[certificateHash].isRevoked,
+        "This certificate has been revoked"
+    );
         return (
             certificates[certificateHash].name,
             certificates[certificateHash].roll,

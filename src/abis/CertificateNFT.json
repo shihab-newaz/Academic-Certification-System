@@ -50,6 +50,11 @@
         "type": "bool"
       },
       {
+        "internalType": "bool",
+        "name": "isRevoked",
+        "type": "bool"
+      },
+      {
         "internalType": "string",
         "name": "fileCID",
         "type": "string"

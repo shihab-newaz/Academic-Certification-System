@@ -21,7 +21,7 @@ function RevokeCertificateComponent() {
     const revokeCertificate = async () => {
         try {
             await contract.revokeCertificate(studentAddress);
-            if(!contract.isIssued){
+            if(contract.isRevoked){
             console.log(contract.isIssued);
             setRevocationMessage('Revocation successful');}
         } catch (error) {
