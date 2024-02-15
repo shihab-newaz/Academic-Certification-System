@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import IssueCertificateComponent from './Issue';
 import RevokeCertificateComponent from './Revoke';
 import ViewCertificateComponent from './View';
-
+import ShareCertificateComponent from './share';
 import VerifyCertificateComponent from './Verify';
+import './css/App.css';
 
 
 let Redirect = false; // Set to true after redirection
@@ -42,73 +43,30 @@ function App() {
 
 
   return (
+    <div>
+    <nav className="navbar">
+      <Link to="/">Issue Certificate</Link>
+      <Link to="/view">View Certificate</Link>
+      <Link to="/verify">Verify Certificate</Link>
+      <Link to="/revoke">Revoke Certificate</Link>
+      <Link to="/share">Share Certificate</Link>
+    </nav>
+
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-
     }}>
       <Routes>
         <Route exact path="/" element={<IssueCertificateComponent issueCertificateComponentAndRedirect={handleIssueCertificate} />} />
         <Route path="/view" element={<ViewCertificateComponent studentAddress={studentAddress} />} />
         <Route path="/verify" element={< VerifyCertificateComponent />} />
         <Route path="/revoke" element={<RevokeCertificateComponent />} />
+        <Route path="/share" element={<ShareCertificateComponent />} />
       </Routes>
-
-
-      {/* Conditional rendering based on the flag */}
-      {pathname !== '/view' && pathname !== '/verify' && pathname !== '/revoke' &&
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Link to="/view">
-            <button style={{ marginBottom: 10 }}>View Certificate</button>
-          </Link>
-        </div>
-      }
-
-
-
-      {pathname !== '/verify' && pathname !== '/revoke' && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Link to="/verify">
-            <button style={{ marginBottom: 10 }}>Go to Verification</button>
-          </Link>
-        </div>
-      )
-      }
-
-{pathname !== '/revoke' && pathname !== '/verify' &&pathname !== '/view' && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Link to="/revoke">
-            <button style={{ marginBottom: 10 }}>Revoke a Certificate</button>
-          </Link>
-        </div>
-      )
-      }
-
-      {pathname !== '/' &&
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Link to="/">
-            <button style={{ marginTop:10,marginBottom: 10 }}>Go to Issuance</button>
-          </Link>
-        </div>
-      }
     </div>
+  </div>
+
   );
 }
 

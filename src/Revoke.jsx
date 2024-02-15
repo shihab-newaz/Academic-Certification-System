@@ -8,6 +8,8 @@ function RevokeCertificateComponent() {
     const [showRevocationMessage, setShowRevocationMessage] = useState(false);
     const [revocationMessage, setRevocationMessage] = useState('');
 
+    const [isLoading, setIsLoading] = useState(false); // Add this line
+
     const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
     const API_KEY = process.env.REACT_APP_API_KEY;
     const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
@@ -19,15 +21,19 @@ function RevokeCertificateComponent() {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
     const revokeCertificate = async () => {
+        setIsLoading(true); // Set loading to true at the start of the function
         try {
-            await contract.revokeCertificate(studentAddress);
-            if(contract.isRevoked){
-            console.log(contract.isIssued);
-            setRevocationMessage('Revocation successful');}
+            
+            const isRevoked = await contract.revokeCertificate(studentAddress);;
+            if (isRevoked) {
+                setRevocationMessage('Revocation successful');
+            } 
         } catch (error) {
             console.error(error);
             setRevocationMessage('Revocation unsuccessful');
         }
+
+        setIsLoading(false); // Set loading to false at the end of the function
 
         setShowRevocationMessage(true);
 
@@ -37,7 +43,7 @@ function RevokeCertificateComponent() {
     };
 
     return (
-        <div className='revoke-certificate-container'>
+        <div className='issue-certificate-container'>
             <h1>Revoke Certificate</h1>
             <input
                 type="text"
@@ -46,6 +52,7 @@ function RevokeCertificateComponent() {
                 onChange={(e) => setStudentAddress(e.target.value)}
             />
             <button style={{ marginTop:10,marginBottom: 10 }} onClick={revokeCertificate}>Revoke Certificate</button>
+            {isLoading && <div className="spinner"></div>} {/* Display spinner when isLoading is true */}
             {showRevocationMessage && <p>{revocationMessage}</p>}
         </div>
     );

@@ -7,17 +7,16 @@ const client = create({
   port: 5001,
   protocol: 'http',
 });
-function ViewCertificateComponent({  }) {
+function ViewCertificateComponent({ }) {
   const [showDetails, setShowDetails] = useState(false);
   const [studentAddress, setStudentAddress] = useState('');
   const [certificateDetails, setCertificateDetails] = useState({});
   const [fileUrl, setFileUrl] = useState(null);
-  const [fileCid, setFileCid] = useState(null);
 
-  const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;  
+  const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
   const API_KEY = process.env.REACT_APP_API_KEY;
   const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
-  const[viewIPFSimage, setViewIPFSimage]=useState(false);
+  const [viewIPFSimage, setViewIPFSimage] = useState(false);
 
   const network = 'maticmum';
   const provider = new ethers.providers.AlchemyProvider(network, API_KEY);
@@ -48,6 +47,7 @@ function ViewCertificateComponent({  }) {
       setFileUrl(url);
     } catch (error) {
       console.error('Error fetching file from IPFS:', error);
+      setCertificateDetails({ error: error.message });
     }
   }
 
@@ -61,20 +61,26 @@ function ViewCertificateComponent({  }) {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
       const certificate = await contract.viewCertificate(studentAddress);
+      const currentTimestamp = Math.floor(Date.now() / 1000); // Get current Unix timestamp in seconds
+      if (!(certificate.timestamp + certificate.expiration >= currentTimestamp)) {
+        setCertificateDetails({ error: 'Certificate has expired' });
+        return;
+      }
       if (certificate.error) {
         setCertificateDetails({ error: certificate.error });
         return;
       }
-  
-      setFileCid(certificate.fileCid);
+
       setCertificateDetails({
         name: certificate.name,
         roll: certificate.roll,
         degreeName: certificate.degreeName,
         subject: certificate.subject,
         issueTimestamp: new Date(certificate.timestamp * 1000),
+        expiry: certificate.expiration.toString(),
+        signature: certificate.signature,
       });
-
+      fetchFileFromIPFS();
       setShowDetails(true);
 
     } catch (error) {
@@ -110,30 +116,31 @@ function ViewCertificateComponent({  }) {
         </div>
       )}
       {showDetails && (
-        <div>
-          <h4>Certificate Details</h4>
-          <p>Name: {certificateDetails.name}</p>
-          <p>Roll Number: {certificateDetails.roll}</p>
-          <p>Degree Name: {certificateDetails.degreeName}</p>
-          <p>Subject: {certificateDetails.subject}</p>
-          <p>Issue Timestamp: {certificateDetails.issueTimestamp.toString()}</p>
-
+        <div className="details-container">
+          <div className='certificate-details'>
+            <h4>Certificate Details</h4>
+            <p>----------------------------</p>
+            <p>Name: {certificateDetails.name}</p>
+            <p>Roll Number: {certificateDetails.roll}</p>
+            <p>Degree Name: {certificateDetails.degreeName}</p>
+            <p>Subject: {certificateDetails.subject}</p>
+            <p>Issue Timestamp: {certificateDetails.issueTimestamp.toString()}</p>
+            <p>Expiry: {certificateDetails.expiry} days</p>
+            {/* <p>Signature: {certificateDetails.signature}</p> */}
+          </div>
+          {viewIPFSimage === true &&
+            <div>
+              <img id="image" alt="From IPFS" src={fileUrl} height={480} width={360} />
+            </div>
+          }
         </div>
       )}
       {certificateDetails.error && (
         <p>
-          Sorry,  The certificate is either not issued or is revoked.
+          Sorry, The certificate is either not issued or is revoked.
         </p>
       )}
 
-      <button onClick={() => fetchFileFromIPFS()} style={{marginBottom:10,width:150}}>View Image</button>  <br />
-            {viewIPFSimage === true &&
-        <div>
-        <img id="image" alt="From IPFS" src={fileUrl}/>
-
-
-        </div>
-      }
     </div>
   );
 }

@@ -11,13 +11,16 @@ contract CertificateNFT {
         string subject;
         address recipient;
         uint256 timestamp;
+        uint256 expiration;
         bool isIssued;
         bool isRevoked;
         string fileCID;
-        //bytes32 signature;
+        bytes signature;
     }
 
     mapping(bytes32 => Certificate) public certificates;
+    mapping(bytes32 => address[]) public sharedCertificates;
+    address[] public recipients;
 
     //event CertificateIssued(bytes32 indexed certificateHash,address indexed recipient);
 
@@ -26,7 +29,10 @@ contract CertificateNFT {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function");
+        require(
+            msg.sender == owner,
+            "Only the University can call this function"
+        );
         _;
     }
 
@@ -37,12 +43,16 @@ contract CertificateNFT {
         string memory subject,
         address recipient,
         uint256 timestamp,
-        string memory fileCID
+        uint256 expiration,
+        string memory fileCID,
+        bytes memory signature
     ) public onlyOwner {
         require(recipient != address(0), "Invalid recipient address");
+        recipients.push(recipient);
         bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
-            !certificates[certificateHash].isIssued||certificates[certificateHash].isRevoked,
+            !certificates[certificateHash].isIssued ||
+                certificates[certificateHash].isRevoked,
             "Certificate already issued or revoked for this recipient"
         );
         certificates[certificateHash] = Certificate(
@@ -52,14 +62,17 @@ contract CertificateNFT {
             subject,
             recipient,
             timestamp,
+            expiration,
             true,
             false,
-            fileCID
+            fileCID,
+            signature
         );
         //emit CertificateIssued(certificateHash, recipient);
     }
 
     function verifyCertificate(address recipient) public view returns (bool) {
+        require(recipient != address(0), "Invalid recipient address");
         bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             certificates[certificateHash].recipient == recipient,
@@ -71,6 +84,10 @@ contract CertificateNFT {
     }
 
     function revokeCertificate(address recipient) public onlyOwner {
+        require(
+            msg.sender == owner,
+            "Only the University can revoke certificates"
+        );
         bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             certificates[certificateHash].isIssued,
@@ -79,7 +96,9 @@ contract CertificateNFT {
         certificates[certificateHash].isRevoked = true;
     }
 
-    function viewCertificate(address studentAddress )
+    function viewCertificate(
+        address studentAddress
+    )
         public
         view
         returns (
@@ -88,7 +107,9 @@ contract CertificateNFT {
             string memory degreeName,
             string memory subject,
             uint256 timestamp,
-            string memory fileCID
+            uint256 expiration,
+            string memory fileCID,
+            bytes memory signature
         )
     {
         bytes32 certificateHash = keccak256(abi.encodePacked(studentAddress));
@@ -97,17 +118,59 @@ contract CertificateNFT {
             "No certificate found for this student"
         );
 
-            require(
-        !certificates[certificateHash].isRevoked,
-        "This certificate has been revoked"
-    );
+        require(
+            !certificates[certificateHash].isRevoked,
+            "This certificate has been revoked"
+        );
         return (
             certificates[certificateHash].name,
             certificates[certificateHash].roll,
             certificates[certificateHash].degreeName,
             certificates[certificateHash].subject,
             certificates[certificateHash].timestamp,
-            certificates[certificateHash].fileCID
+            certificates[certificateHash].expiration,
+            certificates[certificateHash].fileCID,
+            certificates[certificateHash].signature
         );
+    }
+
+    function getAllCertificates() public view returns (Certificate[] memory) {
+        Certificate[] memory issuedCertificates = new Certificate[](
+            recipients.length
+        );
+        for (uint i = 0; i < recipients.length; i++) {
+            bytes32 certificateHash = keccak256(
+                abi.encodePacked(recipients[i])
+            );
+            issuedCertificates[i] = certificates[certificateHash];
+        }
+        return issuedCertificates;
+    }
+
+    function shareCertificate(address recipient, address to) public onlyOwner {
+        bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
+        require(
+            certificates[certificateHash].isIssued,
+            "Certificate not issued"
+        );
+        require(
+            !certificates[certificateHash].isRevoked,
+            "Certificate is revoked"
+        );
+        sharedCertificates[certificateHash].push(to);
+    }
+
+    function isCertificateSharedWith(
+        address recipient,
+        address with
+    ) public view returns (bool) {
+        bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
+        address[] memory sharedWith = sharedCertificates[certificateHash];
+        for (uint i = 0; i < sharedWith.length; i++) {
+            if (sharedWith[i] == with) {
+                return true;
+            }
+        }
+        return false;
     }
 }

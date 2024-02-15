@@ -4,9 +4,7 @@ import './css/Issue.css';
 
 function VerifyCertificateComponent() {
     const [studentAddress, setStudentAddress] = useState('');
-    const [issueResult, setIssueResult] = useState(false);
-
-    const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+    const [signatureVerification, setSignatureVerification] = useState('');
     const [verificationMessage, setVerificationMessage] = useState('');
 
     const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
@@ -21,22 +19,51 @@ function VerifyCertificateComponent() {
 
     const verifyCertificate = async () => {
         try {
-            const verification = await contract.verifyCertificate(studentAddress);
-            setIssueResult(verification);
+            const isIssued = await contract.verifyCertificate(studentAddress);
 
-            if (verification) {
-                console.log('Certificate verification is successful');
-                setVerificationMessage('Verification successful');
-            } else {
+            if (!isIssued) {
                 console.log('Certificate verification is unsuccessful');
-                setVerificationMessage('Verification unsuccessful');
+                setVerificationMessage('Verification unsuccessful: Certificate not found');
+                return;
             }
 
-            setShowVerificationMessage(true);
+            const certificate = await contract.viewCertificate(studentAddress);
+            const currentTimestamp = Math.floor(Date.now() / 1000); // Get current Unix timestamp in seconds
 
-            setTimeout(() => {
-                setShowVerificationMessage(false);
-            }, 5000);
+            if (!(certificate.timestamp + certificate.expiration >= currentTimestamp)) {
+                setVerificationMessage({ error: 'Certificate has expired' });
+                return;
+            }
+
+            const expiration_time = Number(certificate.expiration.toString());
+            const timestamp = certificate.timestamp.toNumber();
+            const certificateData = {
+                studentName: certificate.name,
+                roll: certificate.roll,
+                degreeName: certificate.degreeName,
+                subject: certificate.subject,
+                studentAddress: studentAddress,
+                issueTimestamp: timestamp,
+                expiration: expiration_time,
+                fileCid: certificate.fileCID,
+            };
+
+            const certificateDataString = JSON.stringify(certificateData);
+
+            // Recover the address of the signer
+            const signerAddress = ethers.utils.verifyMessage(certificateDataString, certificate.signature);
+            const expectedSignerAddress = process.env.REACT_APP_SIGNER_ADDRESS;
+
+            console.log(signerAddress + ' AND ' + expectedSignerAddress);
+            if (signerAddress === expectedSignerAddress) {
+                console.log('The signature is valid.');
+                setSignatureVerification('Signature Verification successful');
+            } else {
+                console.log('The signature is NOT valid.');
+                setSignatureVerification('Signature Verification unsuccessful');
+            }
+
+
         } catch (error) {
             console.error(error);
         }
@@ -52,7 +79,11 @@ function VerifyCertificateComponent() {
                 onChange={(e) => setStudentAddress(e.target.value)}
             />
             <button onClick={verifyCertificate}>Verify Certificate</button>
-            {showVerificationMessage && <p>{verificationMessage}</p>}
+            <p>{signatureVerification}</p>
+            <p>{verificationMessage}</p>
+
+
+
         </div>
     );
 }
