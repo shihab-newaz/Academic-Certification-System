@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "J:\\Practice\\Dapp\\contracts\\CertificateNFT.sol": {
-      "lastModificationDate": 1708032508645,
-      "contentHash": "e34faaf7a0d38e12dad84839609baaa5",
+      "lastModificationDate": 1708052276133,
+      "contentHash": "027fd084fad4dc2184250be1daccbeb4",
       "sourceName": "contracts/CertificateNFT.sol",
       "solcConfig": {
         "version": "0.8.19",

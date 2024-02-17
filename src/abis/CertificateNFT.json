@@ -147,12 +147,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "student",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "with",
+        "name": "employer",
         "type": "address"
       }
     ],
@@ -269,12 +269,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "student",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "to",
+        "name": "employer",
         "type": "address"
       }
     ],

@@ -80,8 +80,9 @@ function IssueCertificateComponent() {
   
         // Convert the certificate data to a string
         const certificateDataString = JSON.stringify(certificateData);
+        const hash=ethers.utils.hashMessage(certificateDataString);
         console.log(certificateDataString);
-        const signature = await signer.signMessage(certificateDataString);
+        const signature = await signer.signMessage(hash);
 
         const transaction = await contract.issueCertificate(
           studentName,

@@ -4,6 +4,7 @@ import './css/Issue.css';
 
 function ShareCertificateComponent() {
   const [receiverAddress, setReceiverAddress] = useState('');
+  const[studentAddress, setStudentAddress] = useState(''); 
   const [shareResult, setShareResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +22,7 @@ function ShareCertificateComponent() {
       const contractABI = require('./abis/CertificateNFT.json');
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
-      const transaction = await contract.shareCertificate(receiverAddress);
+      const transaction = await contract.shareCertificate(studentAddress,receiverAddress);
       await transaction.wait();
 
       setShareResult('Certificate shared successfully!');
@@ -39,6 +40,11 @@ function ShareCertificateComponent() {
         type="text"
         placeholder="University/Employer Address"
         onChange={(e) => setReceiverAddress(e.target.value)}
+      />
+        <input
+        type="text"
+        placeholder="Student Address"
+        onChange={(e) => setStudentAddress(e.target.value)}
       />
       <button onClick={shareCertificate}>Share Certificate</button>
       {isLoading && <p>Sharing...</p>}

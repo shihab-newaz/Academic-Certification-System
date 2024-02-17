@@ -147,8 +147,8 @@ contract CertificateNFT {
         return issuedCertificates;
     }
 
-    function shareCertificate(address recipient, address to) public onlyOwner {
-        bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
+    function shareCertificate(address student, address employer) public onlyOwner {
+        bytes32 certificateHash = keccak256(abi.encodePacked(student));
         require(
             certificates[certificateHash].isIssued,
             "Certificate not issued"
@@ -157,17 +157,17 @@ contract CertificateNFT {
             !certificates[certificateHash].isRevoked,
             "Certificate is revoked"
         );
-        sharedCertificates[certificateHash].push(to);
+        sharedCertificates[certificateHash].push(employer);
     }
 
     function isCertificateSharedWith(
-        address recipient,
-        address with
+        address student,
+        address employer
     ) public view returns (bool) {
-        bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
+        bytes32 certificateHash = keccak256(abi.encodePacked(student));
         address[] memory sharedWith = sharedCertificates[certificateHash];
         for (uint i = 0; i < sharedWith.length; i++) {
-            if (sharedWith[i] == with) {
+            if (sharedWith[i] == employer) {
                 return true;
             }
         }

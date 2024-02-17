@@ -11,10 +11,6 @@ import './css/App.css';
 
 let Redirect = false; // Set to true after redirection
 
-//peer identity: 12D3KooWAidW1MSzzaQc4VbjB4V3yg3XYKBQ6pHVNr4eS4XPsGpt
-// ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["http://localhost:3000"]'
-// ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["PUT", "POST", "GET"]'
-
 function App() {
   const [studentAddress, setStudentAddress] = useState('');
 
@@ -32,7 +28,7 @@ function App() {
   // Handle issue certificate and redirect to view certificate page
   const handleIssueCertificate = async () => {
     try {
-      await IssueCertificateComponent(); // Issue the certificate
+       IssueCertificateComponent(); // Issue the certificate
       Router.push('/view'); // Redirect to the view certificate page
       Redirect = true; // Update the flag after redirection
     } catch (error) {
@@ -45,10 +41,10 @@ function App() {
   return (
     <div>
     <nav className="navbar">
-      <Link to="/">Issue Certificate</Link>
-      <Link to="/view">View Certificate</Link>
-      <Link to="/verify">Verify Certificate</Link>
-      <Link to="/revoke">Revoke Certificate</Link>
+      <Link to="/">Certificate Issuance</Link>
+      <Link to="/view">Viewer Portal</Link>
+      <Link to="/verify">Certificate Verification</Link>
+      <Link to="/revoke">Certificate Revocation</Link>
       <Link to="/share">Share Certificate</Link>
     </nav>
 

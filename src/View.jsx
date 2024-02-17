@@ -8,15 +8,18 @@ const client = create({
   protocol: 'http',
 });
 function ViewCertificateComponent({ }) {
-  const [showDetails, setShowDetails] = useState(false);
   const [studentAddress, setStudentAddress] = useState('');
-  const [certificateDetails, setCertificateDetails] = useState({});
+  const [employerAddress, setEmployerAddress] = useState('');
+  const [viewMessage, setViewMessage] = useState({});
   const [fileUrl, setFileUrl] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [certificateDetails, setCertificateDetails] = useState(null); // State for certificate details
+  const [viewIPFSimage, setViewIPFSimage] = useState(false);
 
   const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
   const API_KEY = process.env.REACT_APP_API_KEY;
   const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
-  const [viewIPFSimage, setViewIPFSimage] = useState(false);
+
 
   const network = 'maticmum';
   const provider = new ethers.providers.AlchemyProvider(network, API_KEY);
@@ -30,7 +33,7 @@ function ViewCertificateComponent({ }) {
     try {
       const certificate = await contract.viewCertificate(studentAddress);
       if (certificate.error) {
-        setCertificateDetails({ error: certificate.error });
+        setViewMessage({ error: certificate.error });
         return;
       }
       setViewIPFSimage(true);
@@ -47,7 +50,7 @@ function ViewCertificateComponent({ }) {
       setFileUrl(url);
     } catch (error) {
       console.error('Error fetching file from IPFS:', error);
-      setCertificateDetails({ error: error.message });
+      setViewMessage({ error: error.message });
     }
   }
 
@@ -59,15 +62,20 @@ function ViewCertificateComponent({ }) {
 
       const contractABI = require('./abis/CertificateNFT.json');
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
-
+    
+      const permission=await contract.isCertificateSharedWith(studentAddress,employerAddress);
+      if(!permission){
+        setViewMessage({ error: 'This viewer does not have permission for this certificate' });
+        return;
+      }
       const certificate = await contract.viewCertificate(studentAddress);
       const currentTimestamp = Math.floor(Date.now() / 1000); // Get current Unix timestamp in seconds
       if (!(certificate.timestamp + certificate.expiration >= currentTimestamp)) {
-        setCertificateDetails({ error: 'Certificate has expired' });
+        setViewMessage({ error: 'Certificate has expired' });
         return;
       }
       if (certificate.error) {
-        setCertificateDetails({ error: certificate.error });
+        setViewMessage({ error: certificate.error });
         return;
       }
 
@@ -84,7 +92,7 @@ function ViewCertificateComponent({ }) {
       setShowDetails(true);
 
     } catch (error) {
-      setCertificateDetails({ error: 'Failed to view certificate' + '-->' + error });
+      setViewMessage({ error: 'Failed to view certificate' + '-->' + error });
     }
   };
 
@@ -98,6 +106,12 @@ function ViewCertificateComponent({ }) {
             type="text"
             placeholder="Student Address"
             onChange={(e) => setStudentAddress(e.target.value)}
+          />
+          <input
+            style={{ marginBottom: '10px' }}
+            type="text"
+            placeholder="Employer Address" // Form for employer address
+            onChange={(e) => setEmployerAddress(e.target.value)}
           />
           <button
             onClick={viewCertificate}
@@ -135,11 +149,9 @@ function ViewCertificateComponent({ }) {
           }
         </div>
       )}
-      {certificateDetails.error && (
-        <p>
-          Sorry, The certificate is either not issued or is revoked.
-        </p>
-      )}
+      {viewMessage&& <p>{viewMessage.error}</p>}
+       
+      
 
     </div>
   );
