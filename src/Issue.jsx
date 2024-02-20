@@ -41,7 +41,7 @@ function IssueCertificateComponent() {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const { cid } = await client.add(reader.result);
-        console.log(cid);
+        console.log(cid.toString());
         setFileCid(cid.toString());
 
       };

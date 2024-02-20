@@ -7,6 +7,16 @@
   width: 70vh;
   background-color:beige
  }
+ .view-all-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 50vh; 
+  width: 70vh;
+  background-color:white
+ }
+ 
  h1 {
   font-size: 24px;
   margin-bottom: 20px;
@@ -15,6 +25,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.details-all-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 75vh;
+  padding: 40px;
 }
 input {
   width: 100%;

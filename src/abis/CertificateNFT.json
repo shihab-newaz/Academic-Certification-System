@@ -313,6 +313,49 @@
         "internalType": "address",
         "name": "recipient",
         "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "degreeName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "subject",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "fileCID",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
+      }
+    ],
+    "name": "updateCertificate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       }
     ],
     "name": "verifyCertificate",

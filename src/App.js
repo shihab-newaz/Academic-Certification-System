@@ -6,14 +6,14 @@ import RevokeCertificateComponent from './Revoke';
 import ViewCertificateComponent from './View';
 import ShareCertificateComponent from './share';
 import VerifyCertificateComponent from './Verify';
+import UpdateCertificateComponent from './Update';
+import ViewAllCertificateComponent from './viewAll';
 import './css/App.css';
 
 
 let Redirect = false; // Set to true after redirection
 
 function App() {
-  const [studentAddress, setStudentAddress] = useState('');
-
   const pathname = useLocation().pathname; // Use the useLocation hook inside the App function
 
   // Update the flag when visiting the `/view` route
@@ -43,9 +43,12 @@ function App() {
     <nav className="navbar">
       <Link to="/">Certificate Issuance</Link>
       <Link to="/view">Viewer Portal</Link>
-      <Link to="/verify">Certificate Verification</Link>
-      <Link to="/revoke">Certificate Revocation</Link>
       <Link to="/share">Share Certificate</Link>
+      <Link to="/verify">Certificate Verification</Link>
+      <Link to="/update">Update</Link>
+      <Link to="/revoke">Certificate Revocation</Link>
+      <Link to="/viewAll">View All</Link>
+
     </nav>
 
     <div style={{
@@ -55,10 +58,13 @@ function App() {
     }}>
       <Routes>
         <Route exact path="/" element={<IssueCertificateComponent issueCertificateComponentAndRedirect={handleIssueCertificate} />} />
-        <Route path="/view" element={<ViewCertificateComponent studentAddress={studentAddress} />} />
+        <Route path="/view" element={<ViewCertificateComponent/>} />
+        <Route path="/share" element={<ShareCertificateComponent />} />
         <Route path="/verify" element={< VerifyCertificateComponent />} />
         <Route path="/revoke" element={<RevokeCertificateComponent />} />
-        <Route path="/share" element={<ShareCertificateComponent />} />
+        <Route path="/update" element={<UpdateCertificateComponent />} />
+        <Route path="/viewAll" element={<ViewAllCertificateComponent />} />
+
       </Routes>
     </div>
   </div>

@@ -134,6 +134,33 @@ contract CertificateNFT {
         );
     }
 
+    function updateCertificate(
+        address recipient,
+        string memory degreeName,
+        string memory subject,
+        uint256 timestamp,
+        uint256 expiration,
+        string memory fileCID,
+        bytes memory signature
+    ) public onlyOwner {
+        require(recipient != address(0), "Invalid recipient address");
+        bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
+        require(
+            certificates[certificateHash].isIssued &&
+                !certificates[certificateHash].isRevoked,
+            "Certificate not issued or already revoked for this recipient"
+        );
+
+        Certificate storage certificateToUpdate = certificates[certificateHash];
+
+        certificateToUpdate.degreeName = degreeName;
+        certificateToUpdate.subject = subject;
+        certificateToUpdate.timestamp = timestamp;
+        certificateToUpdate.expiration = expiration;
+        certificateToUpdate.fileCID = fileCID;
+        certificateToUpdate.signature = signature;
+    }
+
     function getAllCertificates() public view returns (Certificate[] memory) {
         Certificate[] memory issuedCertificates = new Certificate[](
             recipients.length
@@ -147,7 +174,10 @@ contract CertificateNFT {
         return issuedCertificates;
     }
 
-    function shareCertificate(address student, address employer) public onlyOwner {
+    function shareCertificate(
+        address student,
+        address employer
+    ) public onlyOwner {
         bytes32 certificateHash = keccak256(abi.encodePacked(student));
         require(
             certificates[certificateHash].isIssued,
