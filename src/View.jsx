@@ -81,6 +81,11 @@ function ViewCertificateComponent({ }) {
       const certificateStr = JSON.parse(decryptedData);
       console.log('Decrypted data:', certificateStr);
 
+      const currentTimestamp = Math.floor(Date.now() / 1000); // check the expiry
+      if (!(certificateStr.timestamp + certificateStr.expiration >= currentTimestamp)) {
+        setViewMessage({ error: 'Certificate has expired' });
+        return;
+      }
       setCertificateDetails({
         name: certificateStr.name,
         roll: certificateStr.roll,
