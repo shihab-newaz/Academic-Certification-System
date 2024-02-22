@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import './css/View.css';
 import { create } from 'ipfs-http-client';
+import AES from 'crypto-js/aes';
+import Utf8 from 'crypto-js/enc-utf8';
 const client = create({
   host: '127.0.0.1',
   port: 5001,
@@ -15,6 +17,8 @@ function ViewCertificateComponent({ }) {
   const [showDetails, setShowDetails] = useState(false);
   const [certificateDetails, setCertificateDetails] = useState(null); // State for certificate details
   const [viewIPFSimage, setViewIPFSimage] = useState(false);
+  const [inputSecretKey, setInputSecretKey] = useState(''); // State for input secret key
+  const [isCorrectKey, setIsCorrectKey] = useState(false); // State for whether the correct key has been entered
 
   const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
   const API_KEY = process.env.REACT_APP_API_KEY;
@@ -29,17 +33,11 @@ function ViewCertificateComponent({ }) {
   const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
 
 
-  async function fetchFileFromIPFS() {
+  async function fetchFileFromIPFS(fileCID) {
     try {
-      const certificate = await contract.viewCertificate(studentAddress);
-      if (certificate.error) {
-        setViewMessage({ error: certificate.error });
-        return;
-      }
       setViewIPFSimage(true);
-      const stream = client.cat(certificate.fileCID);
+      const stream = client.cat(fileCID);
       let data = [];
-
       for await (const chunk of stream) {
         data.push(chunk);
       }
@@ -53,43 +51,51 @@ function ViewCertificateComponent({ }) {
       setViewMessage({ error: error.message });
     }
   }
-
+  const checkSecretKey = () => {// Function to check if the input secret key is correct
+    if (inputSecretKey === process.env.REACT_APP_AES_SECRET_KEY) {
+      setIsCorrectKey(true);
+    } else {
+      alert('The input secret key is incorrect.');
+    }
+  };
   const viewCertificate = async () => {
-    try {
-      const network = 'maticmum';
-      const provider = new ethers.providers.AlchemyProvider(network, API_KEY);
-      const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+    const startTime = performance.now(); // Start counting execution time
 
-      const contractABI = require('./abis/CertificateNFT.json');
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
-    
-      const permission=await contract.isCertificateSharedWith(studentAddress,employerAddress);
-      if(!permission){
+    try {
+
+      const permission = await contract.isCertificateSharedWith(studentAddress, employerAddress);
+      if (!permission) {
         setViewMessage({ error: 'This viewer does not have permission for this certificate' });
         return;
       }
       const certificate = await contract.viewCertificate(studentAddress);
-      const currentTimestamp = Math.floor(Date.now() / 1000); // Get current Unix timestamp in seconds
-      if (!(certificate.timestamp + certificate.expiration >= currentTimestamp)) {
-        setViewMessage({ error: 'Certificate has expired' });
-        return;
-      }
+
       if (certificate.error) {
         setViewMessage({ error: certificate.error });
         return;
       }
+      //Decrypting the encrypted data
+      const bytes = AES.decrypt(certificate.encryptedData, process.env.REACT_APP_AES_SECRET_KEY);
+      const decryptedData = bytes.toString(Utf8);
+      console.log('Decrypted data:', decryptedData);
+      const certificateStr = JSON.parse(decryptedData);
+      console.log('Decrypted data:', certificateStr);
 
       setCertificateDetails({
-        name: certificate.name,
-        roll: certificate.roll,
-        degreeName: certificate.degreeName,
-        subject: certificate.subject,
-        issueTimestamp: new Date(certificate.timestamp * 1000),
-        expiry: certificate.expiration.toString(),
-        signature: certificate.signature,
+        name: certificateStr.name,
+        roll: certificateStr.roll,
+        degreeName: certificateStr.degreeName,
+        subject: certificateStr.subject,
+        issueTimestamp: new Date(certificateStr.timestamp * 1000),
+        expiry: certificateStr.expiration.toString(),
+        signature: certificateStr.signature,
       });
-      fetchFileFromIPFS();
+      console.log('File CID:', certificateStr);
+      fetchFileFromIPFS(certificateStr.fileCid);
       setShowDetails(true);
+      const endTime = performance.now(); // Stop counting execution time
+      const executionTime = endTime - startTime; // Calculate execution time
+      console.log('Execution time:', executionTime, 'ms');
 
     } catch (error) {
       setViewMessage({ error: 'Failed to view certificate' + '-->' + error });
@@ -98,7 +104,30 @@ function ViewCertificateComponent({ }) {
 
   return (
     <div className="view-container">
-      {!showDetails && (
+
+      {!isCorrectKey && (
+        <div>
+          <input
+            style={{ marginBottom: '10px' }}
+            type="password" // Use password type to hide the input
+            placeholder="Enter Secret Key"
+            onChange={(e) => setInputSecretKey(e.target.value)}
+          />
+          <button
+            onClick={checkSecretKey}
+            style={{
+              backgroundColor: '#4caf50',
+              color: 'white',
+              padding: '10px 15px',
+              border: 'none',
+              borderRadius: '5px',
+              marginBottom: '10px',
+              cursor: 'pointer',
+            }}
+          >Enter Secret Key</button>
+        </div>
+      )}
+      {isCorrectKey &&!showDetails && (
         <div>
           <h1>View Certificate</h1>
           <input
@@ -129,7 +158,7 @@ function ViewCertificateComponent({ }) {
           </button>
         </div>
       )}
-      {showDetails && (
+      {isCorrectKey &&showDetails && (
         <div className="details-container">
           <div className='certificate-details'>
             <h4>Certificate Details</h4>
@@ -149,9 +178,9 @@ function ViewCertificateComponent({ }) {
           }
         </div>
       )}
-      {viewMessage&& <p>{viewMessage.error}</p>}
-       
-      
+      {viewMessage && <p>{viewMessage.error}</p>}
+
+
 
     </div>
   );

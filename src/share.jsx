@@ -21,10 +21,14 @@ function ShareCertificateComponent() {
 
       const contractABI = require('./abis/CertificateNFT.json');
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
+      const startTime = performance.now(); // Start counting execution time
 
       const transaction = await contract.shareCertificate(studentAddress,receiverAddress);
       await transaction.wait();
-
+      const endTime = performance.now(); // Stop counting execution time
+      const executionTime = endTime - startTime; // Calculate execution time  
+      
+      console.log('Execution time for shareCertificate:', executionTime, 'ms');
       setShareResult('Certificate shared successfully!');
     } catch (error) {
       console.error('Error sharing certificate:', error);

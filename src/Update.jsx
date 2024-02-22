@@ -2,9 +2,8 @@ import React, { useState, useRef } from 'react';
 import { ethers } from 'ethers';
 import './css/Issue.css'
 import { create } from 'ipfs-http-client';
-//import {  Link } from 'react-router-dom';
+import AES from 'crypto-js/aes';
 
-//let ViewIPFSimage=false;
 
 const client = create({
     host: '127.0.0.1',
@@ -14,8 +13,8 @@ const client = create({
 
 
 function UpdateCertificateComponent() {
-    //   const [studentName, setStudentName] = useState('');
-    //   const [roll, setRoll] = useState('');
+    const [studentName, setStudentName] = useState('');
+    const [roll, setRoll] = useState('');
     const [degreeName, setDegreeName] = useState('');
     const [subject, setSubject] = useState('');
     const [expiry, setExpiry] = useState('');
@@ -54,6 +53,7 @@ function UpdateCertificateComponent() {
     }
 
     const updateCertificate = async () => {
+        const startTime = performance.now(); // Start counting execution time
         setIsLoading(true);
         try {
             const network = 'maticmum';
@@ -68,6 +68,8 @@ function UpdateCertificateComponent() {
             if (fileCid) {
                 // Get the certificate data
                 const certificateData = {
+                    studentName,
+                    roll,
                     degreeName,
                     subject,
                     studentAddress,
@@ -78,21 +80,24 @@ function UpdateCertificateComponent() {
 
                 // Convert the certificate data to a string
                 const certificateDataString = JSON.stringify(certificateData);
-                const hash = ethers.utils.hashMessage(certificateDataString);
-                console.log(certificateDataString);
+
+                const SECRET_KEY = process.env.REACT_APP_AES_SECRET_KEY;
+                const encryptedData = AES.encrypt(certificateDataString, SECRET_KEY).toString();
+
+                const hash = ethers.utils.hashMessage(encryptedData);
                 const signature = await signer.signMessage(hash);
 
                 const transaction = await contract.updateCertificate(
                     studentAddress,
-                    degreeName,
-                    subject,
-                    issueTimestamp,
-                    expiration,
-                    fileCid,
+                    encryptedData,
+                    hash,
                     signature
                 );
                 await transaction.wait();
                 setIssueResult('Certificate updated successfully!');
+                const endTime = performance.now(); // Stop counting execution time
+                const executionTime = endTime - startTime; // Calculate execution time
+                console.log('Execution time:', executionTime, 'ms');
             }
             else { console.log('Cid is null'); }
 
@@ -106,6 +111,8 @@ function UpdateCertificateComponent() {
     return (
         <div className='issue-certificate-container'>
             <h1>Update Certificate</h1>
+            <input type="text" placeholder='Student Name' onChange={(e) => setStudentName(e.target.value)} />
+            <input type="text" placeholder='Roll' onChange={(e) => setRoll(e.target.value)} />
             <input
                 type="text"
                 placeholder="Degree Name"

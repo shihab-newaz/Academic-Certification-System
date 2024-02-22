@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import './css/View.css';
 import { create } from 'ipfs-http-client';
+import AES from 'crypto-js/aes';
+import Utf8 from 'crypto-js/enc-utf8';
 const client = create({
     host: '127.0.0.1',
     port: 5001,
@@ -29,6 +31,8 @@ function ViewAllCertificateComponent({ }) {
     const colors = ['lightblue', 'lightgreen', 'lightyellow', 'lightpink', 'lightgray'];
 
     const viewAllCertificates = async () => {
+        const startTime = performance.now(); // Start counting execution time
+
         try {
 
             const certificate = await contract.getAllCertificates();
@@ -36,25 +40,36 @@ function ViewAllCertificateComponent({ }) {
                 setViewMessage({ error: certificate.error });
                 return;
             }
-            setCertificates(certificate);
 
-        const fileUrls = await Promise.all(certificate.map(async (cert, index) => {
-            console.log(`Certificate ${index}:`, cert);
-            const stream = client.cat(cert.fileCID);
-            let data = [];
 
-            for await (const chunk of stream) {
-                data.push(chunk);
-            }
-            // Create a Blob from the data
-            const blob = new Blob(data, { type: 'image/jpeg' });
-            // Create a URL from the Blob
-            const url = URL.createObjectURL(blob);
-            return url; // Return the URL
-        }));
+            const decryptedCertificates = certificate.map(cert => {
+                const bytes = AES.decrypt(cert.encryptedData, process.env.REACT_APP_AES_SECRET_KEY);
+                const decryptedData = bytes.toString(Utf8);
+                const certificateObj = JSON.parse(decryptedData);
+                return certificateObj;
+            });
+            console.log(decryptedCertificates)
+            const fileUrls = await Promise.all(decryptedCertificates.map(async (cert, index) => {
+                console.log(`Certificate ${index}:`, cert);
+                const stream = client.cat(cert.fileCid);
+                let data = [];
+
+                for await (const chunk of stream) {
+                    data.push(chunk);
+                }
+                // Create a Blob from the data
+                const blob = new Blob(data, { type: 'image/jpeg' });
+                // Create a URL from the Blob
+                const url = URL.createObjectURL(blob);
+                return url; // Return the URL
+            }));
             setFileUrl(fileUrls);
             console.log('File URL:', fileUrls);
             setShowDetails(true);
+            setCertificates(decryptedCertificates);
+            const endTime = performance.now(); // Stop counting execution time
+            const executionTime = endTime - startTime; // Calculate execution time
+            console.log('Execution time:', executionTime, 'ms');
 
         } catch (error) {
             setViewMessage({ error: 'Failed to view certificate' + '-->' + error });
@@ -86,16 +101,15 @@ function ViewAllCertificateComponent({ }) {
                     <div className='certificate-details'>
                         <h4>Certificate Details</h4>
                         <p>----------------------------</p>
-                        <p>Name: {certificate.name}</p>
+                        <p>Name: {certificate.studentName}</p>
                         <p>Roll Number: {certificate.roll}</p>
                         <p>Degree Name: {certificate.degreeName}</p>
                         <p>Subject: {certificate.subject}</p>
-                        {/* <p>Issue Timestamp: {certificate.timestamp ? new Date(certificate.timestamp * 1000).toString() : 'N/A'}</p>
-                        <p>Expiry: {certificate.expiration ? certificate.expiration.toString() : 'N/A'} days</p> */}
-                        {/* <p>Signature: {certificate.signature}</p> */}
+                        <p>Issue Timestamp: {certificate.issueTimestamp ? new Date(certificate.issueTimestamp * 1000).toString() : 'N/A'}</p>
+                        <p>Expiry: {certificate.expiration ? certificate.expiration.toString() : 'N/A'} days</p> 
                     </div>
                     <div>
-                    <img id="image" alt="From IPFS" src={fileUrl[index]} height={480} width={360} />
+                        <img id="image" alt="From IPFS" src={fileUrl[index]} height={480} width={360} />
                     </div>
                 </div>
             ))}

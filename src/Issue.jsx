@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ethers } from 'ethers';
 import './css/Issue.css'
 import { create } from 'ipfs-http-client';
-//import {  Link } from 'react-router-dom';
+import AES from 'crypto-js/aes';
 
 //let ViewIPFSimage=false;
 
@@ -40,7 +40,11 @@ function IssueCertificateComponent() {
     try {
       const reader = new FileReader();
       reader.onloadend = async () => {
+        const startTime = performance.now(); // Start counting execution time
         const { cid } = await client.add(reader.result);
+        const endTime = performance.now(); // Stop counting execution time
+        const executionTime = endTime - startTime; // Calculate execution time
+        console.log('Execution time for handleUploadToIPFS:', executionTime, 'ms');
         console.log(cid.toString());
         setFileCid(cid.toString());
 
@@ -54,6 +58,7 @@ function IssueCertificateComponent() {
   }
 
   const issueCertificate = async () => {
+    //const startTime = performance.now(); // Start counting execution time
     setIsLoading(true);
     try {
       const network = 'maticmum';
@@ -62,7 +67,8 @@ function IssueCertificateComponent() {
   
       const contractABI = require('./abis/CertificateNFT.json');
       const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
-  
+
+
       const issueTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp
       const expiration=Number(expiry)
       if (fileCid) {
@@ -77,25 +83,44 @@ function IssueCertificateComponent() {
           expiration,
           fileCid
         };
-  
+
+
+        
         // Convert the certificate data to a string
         const certificateDataString = JSON.stringify(certificateData);
-        const hash=ethers.utils.hashMessage(certificateDataString);
-        console.log(certificateDataString);
-        const signature = await signer.signMessage(hash);
+        //console.log(certificateDataString);
 
+        // Encrypt the certificate data
+        const SECRET_KEY = process.env.REACT_APP_AES_SECRET_KEY;
+        const encryptedData = AES.encrypt(certificateDataString, SECRET_KEY).toString();
+   
+        const hash=ethers.utils.hashMessage(encryptedData);
+        const signature = await signer.signMessage(hash);
+        console.log(encryptedData);
+        console.log(hash);
         const transaction = await contract.issueCertificate(
-          studentName,
-          roll,
-          degreeName,
-          subject,
           studentAddress,
-          issueTimestamp,
-          expiry,
-          fileCid,
+          encryptedData,
+          hash,
           signature
         );
         await transaction.wait();
+
+        // const endTime = performance.now(); // Stop counting execution time
+        // const executionTime = endTime - startTime; // Calculate execution time
+        // console.log('Execution time for issueCertificate:', executionTime, 'ms');
+
+        // const signerAddress = ethers.utils.verifyMessage(hash,signature);
+        // const expectedSignerAddress = process.env.REACT_APP_SIGNER_ADDRESS;
+
+        // console.log(signerAddress + ' AND ' + expectedSignerAddress);
+        // if (signerAddress === expectedSignerAddress) {
+        //     console.log('The signature is valid.');
+        // } else {
+        //     console.log('The signature is NOT valid.');
+        // }
+
+
         setIssueResult('Certificate issued successfully!');
       }
       else { console.log('Cid is null'); }

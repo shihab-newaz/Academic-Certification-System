@@ -7,47 +7,32 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "address",
         "name": "",
-        "type": "bytes32"
+        "type": "address"
       }
     ],
     "name": "certificates",
     "outputs": [
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "roll",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "degreeName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "subject",
-        "type": "string"
-      },
       {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "encryptedData",
+        "type": "string"
       },
       {
-        "internalType": "uint256",
-        "name": "expiration",
-        "type": "uint256"
+        "internalType": "bytes32",
+        "name": "dataHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       },
       {
         "internalType": "bool",
@@ -58,16 +43,6 @@
         "internalType": "bool",
         "name": "isRevoked",
         "type": "bool"
-      },
-      {
-        "internalType": "string",
-        "name": "fileCID",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
       }
     ],
     "stateMutability": "view",
@@ -80,39 +55,24 @@
       {
         "components": [
           {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "roll",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "degreeName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "subject",
-            "type": "string"
-          },
-          {
             "internalType": "address",
             "name": "recipient",
             "type": "address"
           },
           {
-            "internalType": "uint256",
-            "name": "timestamp",
-            "type": "uint256"
+            "internalType": "string",
+            "name": "encryptedData",
+            "type": "string"
           },
           {
-            "internalType": "uint256",
-            "name": "expiration",
-            "type": "uint256"
+            "internalType": "bytes32",
+            "name": "dataHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
           },
           {
             "internalType": "bool",
@@ -123,16 +83,6 @@
             "internalType": "bool",
             "name": "isRevoked",
             "type": "bool"
-          },
-          {
-            "internalType": "string",
-            "name": "fileCID",
-            "type": "string"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
           }
         ],
         "internalType": "struct CertificateNFT.Certificate[]",
@@ -170,44 +120,19 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "roll",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "degreeName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "subject",
-        "type": "string"
-      },
-      {
         "internalType": "address",
         "name": "recipient",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "expiration",
-        "type": "uint256"
-      },
-      {
         "internalType": "string",
-        "name": "fileCID",
+        "name": "encryptedData",
         "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "dataHash",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",
@@ -286,9 +211,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "address",
         "name": "",
-        "type": "bytes32"
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -316,28 +241,13 @@
       },
       {
         "internalType": "string",
-        "name": "degreeName",
+        "name": "encryptedData",
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "subject",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "expiration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "fileCID",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "dataHash",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",
@@ -381,38 +291,13 @@
     "outputs": [
       {
         "internalType": "string",
-        "name": "name",
+        "name": "encryptedData",
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "roll",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "degreeName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "subject",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "expiration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "fileCID",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "dataHash",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",

@@ -6,7 +6,7 @@ function VerifyCertificateComponent() {
     const [studentAddress, setStudentAddress] = useState('');
     const [signatureVerification, setSignatureVerification] = useState('');
     const [verificationMessage, setVerificationMessage] = useState('');
-    const [employerAddress, setEmployerAddress] = useState(''); 
+    const [employerAddress, setEmployerAddress] = useState('');
     const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
     const API_KEY = process.env.REACT_APP_API_KEY;
     const PRIVATE_KEY = process.env.REACT_APP_PRIVATE_KEY;
@@ -19,13 +19,15 @@ function VerifyCertificateComponent() {
 
     const verifyCertificate = async () => {
         try {
+            const startTime = performance.now(); // Start counting execution time
+
             const isIssued = await contract.verifyCertificate(studentAddress);
 
-            const permission=await contract.isCertificateSharedWith(studentAddress,employerAddress);
+            const permission = await contract.isCertificateSharedWith(studentAddress, employerAddress);
 
-            if(!permission){
-              setVerificationMessage({ error: 'The verifier does not have permission for this certificate' });
-              return;
+            if (!permission) {
+                setVerificationMessage({ error: 'The verifier does not have permission for this certificate' });
+                return;
             }
             if (!isIssued) {
                 console.log('Certificate verification is unsuccessful');
@@ -34,31 +36,9 @@ function VerifyCertificateComponent() {
             }
 
             const certificate = await contract.viewCertificate(studentAddress);
-            const currentTimestamp = Math.floor(Date.now() / 1000); // Get current Unix timestamp in seconds
-
-            if (!(certificate.timestamp + certificate.expiration >= currentTimestamp)) {
-                setVerificationMessage({ error: 'Certificate has expired' });
-                return;
-            }
-
-            const expiration_time = Number(certificate.expiration.toString());
-            const timestamp = certificate.timestamp.toNumber();
-            const certificateData = {
-                studentName: certificate.name,
-                roll: certificate.roll,
-                degreeName: certificate.degreeName,
-                subject: certificate.subject,
-                studentAddress: studentAddress,
-                issueTimestamp: timestamp,
-                expiration: expiration_time,
-                fileCid: certificate.fileCID,
-            };
-
-            const certificateDataString = JSON.stringify(certificateData);
-            const hash=ethers.utils.hashMessage(certificateDataString);
-
+            console.log(certificate);
             // Recover the address of the signer
-            const signerAddress = ethers.utils.verifyMessage(hash, certificate.signature);
+            const signerAddress = ethers.utils.verifyMessage(certificate.dataHash, certificate.signature);
             const expectedSignerAddress = process.env.REACT_APP_SIGNER_ADDRESS;
 
             console.log(signerAddress + ' AND ' + expectedSignerAddress);
@@ -70,7 +50,9 @@ function VerifyCertificateComponent() {
                 setSignatureVerification('Signature Verification unsuccessful');
             }
 
-
+            const endTime = performance.now(); // Stop counting execution time
+            const executionTime = endTime - startTime; // Calculate execution time
+            console.log('Execution time for verifyCertificate:', executionTime, 'ms');
         } catch (error) {
             console.error(error);
         }
@@ -86,11 +68,11 @@ function VerifyCertificateComponent() {
                 onChange={(e) => setStudentAddress(e.target.value)}
             />
             <input
-            style={{ marginBottom: '10px' }}
-            type="text"
-            placeholder="Verifier Address" 
-            onChange={(e) => setEmployerAddress(e.target.value)}
-          />
+                style={{ marginBottom: '10px' }}
+                type="text"
+                placeholder="Verifier Address"
+                onChange={(e) => setEmployerAddress(e.target.value)}
+            />
             <button onClick={verifyCertificate}>Verify Certificate</button>
             <p>{signatureVerification}</p>
             <p>{verificationMessage}</p>
