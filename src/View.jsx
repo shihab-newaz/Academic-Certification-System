@@ -82,16 +82,18 @@ function ViewCertificateComponent({ }) {
       console.log('Decrypted data:', certificateStr);
 
       const currentTimestamp = Math.floor(Date.now() / 1000); // check the expiry
-      if (!(certificateStr.timestamp + certificateStr.expiration >= currentTimestamp)) {
+      console.log('Current Timestamp:', currentTimestamp);
+      console.log('Certificate Timestamp:', certificateStr.issueTimestamp + certificateStr.expiration );
+      if ((certificateStr.timestamp + certificateStr.expiration >= currentTimestamp)) {
         setViewMessage({ error: 'Certificate has expired' });
         return;
       }
       setCertificateDetails({
-        name: certificateStr.name,
+        name: certificateStr.studentName,
         roll: certificateStr.roll,
         degreeName: certificateStr.degreeName,
         subject: certificateStr.subject,
-        issueTimestamp: new Date(certificateStr.timestamp * 1000),
+        issueTimestamp: new Date(certificateStr.issueTimestamp * 1000),
         expiry: certificateStr.expiration.toString(),
         signature: certificateStr.signature,
       });
