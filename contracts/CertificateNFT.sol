@@ -154,4 +154,20 @@ contract CertificateNFT {
         }
         return false;
     }
+
+function unshareCertificate(address student, address employer) public onlyOwner {
+    require(certificates[student].isIssued, "Certificate not issued");
+    require(!certificates[student].isRevoked, "Certificate is revoked");
+
+    address[] storage sharedWith = sharedCertificates[student];
+    for (uint i = 0; i < sharedWith.length; i++) {
+        if (sharedWith[i] == employer) {
+            // Remove the employer from the shared list
+            sharedWith[i] = sharedWith[sharedWith.length - 1];
+            sharedWith.pop();
+            return;
+        }
+    }
+    revert("Certificate not shared with this employer");
+}
 }

@@ -8,6 +8,8 @@ import ShareCertificateComponent from './share';
 import VerifyCertificateComponent from './Verify';
 import UpdateCertificateComponent from './Update';
 import ViewAllCertificateComponent from './viewAll';
+import UnShareCertificateComponent from './unshare';
+
 import './css/App.css';
 
 
@@ -28,7 +30,7 @@ function App() {
   // Handle issue certificate and redirect to view certificate page
   const handleIssueCertificate = async () => {
     try {
-       IssueCertificateComponent(); // Issue the certificate
+      IssueCertificateComponent(); // Issue the certificate
       Router.push('/view'); // Redirect to the view certificate page
       Redirect = true; // Update the flag after redirection
     } catch (error) {
@@ -40,34 +42,38 @@ function App() {
 
   return (
     <div>
-    <nav className="navbar">
-      <Link to="/">Certificate Issuance</Link>
-      <Link to="/view">Viewer Portal</Link>
-      <Link to="/share">Share Certificate</Link>
-      <Link to="/verify">Certificate Verification</Link>
-      <Link to="/update">Update</Link>
-      <Link to="/revoke">Certificate Revocation</Link>
-      <Link to="/viewAll">View All</Link>
+      <nav className="navbar">
+        <Link to="/"> Issue</Link>
+        <Link to="/update">Update</Link>
+        <Link to="/revoke"> Revoke</Link>
+        <Link to="/view">Viewer Portal</Link>
+        <Link to="/share">Share</Link>
+        <Link to="/unshare">Unshare</Link>
+        <Link to="/verify">Verify</Link>
+        <Link to="/viewAll">View All</Link>
 
-    </nav>
 
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    }}>
-      <Routes>
-        <Route exact path="/" element={<IssueCertificateComponent issueCertificateComponentAndRedirect={handleIssueCertificate} />} />
-        <Route path="/view" element={<ViewCertificateComponent/>} />
-        <Route path="/share" element={<ShareCertificateComponent />} />
-        <Route path="/verify" element={< VerifyCertificateComponent />} />
-        <Route path="/revoke" element={<RevokeCertificateComponent />} />
-        <Route path="/update" element={<UpdateCertificateComponent />} />
-        <Route path="/viewAll" element={<ViewAllCertificateComponent />} />
 
-      </Routes>
+      </nav>
+
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        <Routes>
+          <Route exact path="/" element={<IssueCertificateComponent issueCertificateComponentAndRedirect={handleIssueCertificate} />} />
+          <Route path="/view" element={<ViewCertificateComponent />} />
+          <Route path="/share" element={<ShareCertificateComponent />} />
+          <Route path="/verify" element={< VerifyCertificateComponent />} />
+          <Route path="/revoke" element={<RevokeCertificateComponent />} />
+          <Route path="/update" element={<UpdateCertificateComponent />} />
+          <Route path="/viewAll" element={<ViewAllCertificateComponent />} />
+          <Route path="/unshare" element={<UnShareCertificateComponent />} />
+
+        </Routes>
+      </div>
     </div>
-  </div>
 
   );
 }
