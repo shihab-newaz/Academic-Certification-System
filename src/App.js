@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import IssueCertificateComponent from './Issue';
@@ -9,7 +9,7 @@ import VerifyCertificateComponent from './Verify';
 import UpdateCertificateComponent from './Update';
 import ViewAllCertificateComponent from './viewAll';
 import UnShareCertificateComponent from './unshare';
-
+import TamperCertificateComponent from './tamper';
 import './css/App.css';
 
 
@@ -51,7 +51,7 @@ function App() {
         <Link to="/unshare">Unshare</Link>
         <Link to="/verify">Verify</Link>
         <Link to="/viewAll">View All</Link>
-
+        <Link to="/tamper">Tamper</Link>
 
 
       </nav>
@@ -70,7 +70,7 @@ function App() {
           <Route path="/update" element={<UpdateCertificateComponent />} />
           <Route path="/viewAll" element={<ViewAllCertificateComponent />} />
           <Route path="/unshare" element={<UnShareCertificateComponent />} />
-
+          <Route path="/tamper" element={<TamperCertificateComponent />} />
         </Routes>
       </div>
     </div>

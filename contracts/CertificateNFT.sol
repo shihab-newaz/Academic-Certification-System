@@ -102,7 +102,7 @@ contract CertificateNFT {
         string memory encryptedData,
         bytes32 dataHash,
         bytes memory signature
-    ) public onlyOwner {
+    ) public  {
         require(recipient != address(0), "Invalid recipient address");
         //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
