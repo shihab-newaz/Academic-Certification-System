@@ -1,59 +1,41 @@
 {
-  "name": "hardhat",
-  "version": "0.1.0",
+  "name": "blockchain-service",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "main": "app.js",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "acorn": "^8.11.2",
-    "alchemy-sdk": "^2.10.1",
-    "bootstrap": "^5.3.2",
+    "@helia/unixfs": "^3.0.6",
+    "@openzeppelin/contracts": "^5.0.2",
+    "axios": "^1.7.2",
+    "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "form-data": "^4.0.0",
+    "helia": "^4.2.4",
     "ipfs-http-client": "^60.0.1",
-    "react": "^18.2.0",
-    "react-bootstrap": "^2.9.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "^5.0.1",
-    "web-vitals": "^2.1.4"
+    "node-fetch": "^2.7.0",
+    "pinata": "^0.3.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.6",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.17.4"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "hardhat test"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "engines": {
+    "node": ">=14.0.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
-  "main": "index.js",
-  "devDependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.22.20",
-    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "@nomiclabs/hardhat-ethers": "^2.2.3",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.17.4",
-    "hardhat-abigen": "^1.1.4",
-    "react-router-dom": "^6.20.1"
-  },
+  "description": "Node.js blockchain interaction service",
   "author": "",
   "license": "ISC"
 }

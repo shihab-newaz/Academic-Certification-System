@@ -1,20 +1,19 @@
-// Setting up Alchemy
-require('dotenv').config();
-const { Network, Alchemy } = require("alchemy-sdk");
-
-
-// Optional Config object, but defaults to demo api-key and eth-mainnet.
-const settings = {
-  apiKey: process.env.API_KEY, // Replace with your Alchemy API Key.
-  network: Network.MATIC_MUMBAI, // Replace with your network.
-};
-
-const alchemy = new Alchemy(settings);
-
 async function main() {
-  const latestBlock = await alchemy.core.getBlockNumber();
-  console.log("The latest block number is", latestBlock);
+  const QuickNode = require('@quicknode/sdk');
+  // if you are using ESM style imports, use this line instead:
+  // import QuickNode from '@quicknode/sdk';
+
+  const core = new Core({
+    endpointUrl: 'https://maximum-bitter-voice.matic-amoy.quiknode.pro/d538c59307f7a37d1ab759a42b98c5f8d2594ef4/',
+  })
+
+  const currentBlockNumber = await core.client.getBlockNumber();
+  console.log(currentBlockNumber)
 }
 
-main();
-
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

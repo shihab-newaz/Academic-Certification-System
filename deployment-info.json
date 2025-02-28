@@ -1,0 +1,10 @@
+{
+  "contractName": "CertificateContract",
+  "contractAddress": "0xD810d28a581B14444C4553DfaC1f8E82760F3103",
+  "deployerAddress": "0x3C555FBDD5Df411DA795c8b9c230b76EA5d1a514",
+  "network": "polygon_amoy",
+  "chainId": "80002",
+  "deploymentBlock": 12132537,
+  "timestamp": "2024-09-18T18:54:01.731Z",
+  "transactionHash": "0x60e82430d39b61f445a4f23f1283d8a63efabaa83845ac64f81567f8198aaabd"
+}
